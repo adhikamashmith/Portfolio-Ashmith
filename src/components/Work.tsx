@@ -3,12 +3,14 @@ import WorkImage from "./WorkImage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+
 import cv from "../assets/cv.jpg";
 import tatva from "../assets/tatavfoow.avif";
 import mockmate from "../assets/mockmate.jpg";
 import clipforge from "../assets/clipforge.webp";
 
-gsap.registerPlugin(useGSAP);
+// ✅ Correct plugin registration
+gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
   const projects = [
@@ -43,27 +45,34 @@ const Work = () => {
   ];
 
   useGSAP(() => {
-    let translateX: number = 0;
+    const boxes = document.getElementsByClassName("work-box");
+
+    if (!boxes.length) return;
+
+    let translateX = 0;
 
     function setTranslateX() {
-      const box = document.getElementsByClassName("work-box");
-      const rectLeft = document
-        .querySelector(".work-container")!
-        .getBoundingClientRect().left;
-      const rect = box[0].getBoundingClientRect();
-      const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-      let padding: number =
-        parseInt(window.getComputedStyle(box[0]).padding) / 2;
-      translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
+      const container = document.querySelector(".work-container");
+      const firstBox = boxes[0] as HTMLElement;
+
+      if (!container || !firstBox) return;
+
+      const rectLeft = container.getBoundingClientRect().left;
+      const rect = firstBox.getBoundingClientRect();
+      const parentWidth = firstBox.parentElement?.getBoundingClientRect().width || 0;
+
+      const padding = parseInt(window.getComputedStyle(firstBox).padding) / 2 || 0;
+
+      translateX = rect.width * boxes.length - (rectLeft + parentWidth) + padding;
     }
 
     setTranslateX();
 
-    let timeline = gsap.timeline({
+    const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".work-section",
         start: "top top",
-        end: `+=${translateX}`, // Use actual scroll width
+        end: `+=${translateX}`,
         scrub: true,
         pin: true,
         id: "work",
@@ -75,7 +84,6 @@ const Work = () => {
       ease: "none",
     });
 
-    // Clean up (optional, good practice)
     return () => {
       timeline.kill();
       ScrollTrigger.getById("work")?.kill();
@@ -92,28 +100,32 @@ const Work = () => {
         <h2>
           My <span>Work</span>
         </h2>
+
         <div className="work-flex">
-          {projects.map((_value, index) => (
+          {projects.map((item, index) => (
             <div className="work-box" key={index}>
               <div className="work-info">
                 <div className="work-title">
                   <h3>0{index + 1}</h3>
 
                   <div>
-                    <h4>{_value.title}</h4>
-                    <p>{_value.category}</p>
+                    <h4>{item.title}</h4>
+                    <p>{item.category}</p>
                   </div>
                 </div>
+
                 <h4>Tools and features</h4>
-                <p>{_value.tools}</p>
+                <p>{item.tools}</p>
+
                 <button
                   className="view-repo-btn"
-                  onClick={() => handleViewRepo(_value.repo)}
+                  onClick={() => handleViewRepo(item.repo)}
                 >
                   View Repository
                 </button>
               </div>
-              <WorkImage image={_value.image} alt={_value.title} />
+
+              <WorkImage image={item.image} alt={item.title} />
             </div>
           ))}
         </div>

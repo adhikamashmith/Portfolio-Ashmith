@@ -1,54 +1,80 @@
-import { SplitText } from "gsap-trial/SplitText";
 import gsap from "gsap";
-import { smoother } from "../Navbar";
 
 export function initialFX() {
   document.body.style.overflowY = "auto";
-  smoother.paused(false);
-  document.getElementsByTagName("main")[0].classList.add("main-active");
+
+  // safer smoother access (no any)
+  const smoother = (window as unknown as { smoother?: { paused?: (v: boolean) => void } }).smoother;
+  smoother?.paused?.(false);
+
+  document.querySelector("main")?.classList.add("main-active");
+
   gsap.to("body", {
     backgroundColor: "#0b080c",
     duration: 0.5,
     delay: 1,
   });
 
-  var landingText = new SplitText(
-    [".landing-info h3", ".landing-intro h2", ".landing-intro h1"],
-    {
-      type: "chars,lines",
-      linesClass: "split-line",
-    }
-  );
-  gsap.fromTo(
-    landingText.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
-    {
-      opacity: 1,
-      duration: 1.2,
-      filter: "blur(0px)",
-      ease: "power3.inOut",
-      y: 0,
-      stagger: 0.025,
-      delay: 0.3,
-    }
-  );
+  const splitChars = (selector: string): HTMLElement[] => {
+    const el = document.querySelector(selector);
+    if (!el) return [];
 
-  let TextProps = { type: "chars,lines", linesClass: "split-h2" };
-
-  var landingText2 = new SplitText(".landing-h2-info", TextProps);
-  gsap.fromTo(
-    landingText2.chars,
-    { opacity: 0, y: 80, filter: "blur(5px)" },
-    {
-      opacity: 1,
-      duration: 1.2,
-      filter: "blur(0px)",
-      ease: "power3.inOut",
-      y: 0,
-      stagger: 0.025,
-      delay: 0.3,
+    // prevent double split
+    if ((el as HTMLElement).dataset.split === "true") {
+      return Array.from(el.querySelectorAll(".char"));
     }
-  );
+
+    const text = el.textContent || "";
+
+    el.innerHTML = text
+      .split("")
+      .map((c) => `<span class="char">${c}</span>`)
+      .join("");
+
+    (el as HTMLElement).dataset.split = "true";
+
+    return Array.from(el.querySelectorAll(".char"));
+  };
+
+  const landing1 = [
+    ...splitChars(".landing-info h3"),
+    ...splitChars(".landing-intro h2"),
+    ...splitChars(".landing-intro h1"),
+  ];
+
+  if (landing1.length) {
+    gsap.fromTo(
+      landing1,
+      { opacity: 0, y: 80, filter: "blur(5px)" },
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.2,
+        stagger: 0.025,
+        delay: 0.3,
+        ease: "power3.inOut",
+      }
+    );
+  }
+
+  const landing2 = splitChars(".landing-h2-info");
+
+  if (landing2.length) {
+    gsap.fromTo(
+      landing2,
+      { opacity: 0, y: 80, filter: "blur(5px)" },
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.2,
+        stagger: 0.025,
+        delay: 0.3,
+        ease: "power3.inOut",
+      }
+    );
+  }
 
   gsap.fromTo(
     ".landing-info-h2",
@@ -61,6 +87,7 @@ export function initialFX() {
       delay: 0.8,
     }
   );
+
   gsap.fromTo(
     [".header", ".icons-section", ".nav-fade"],
     { opacity: 0 },
@@ -72,65 +99,84 @@ export function initialFX() {
     }
   );
 
-  var landingText3 = new SplitText(".landing-h2-info-1", TextProps);
-  var landingText4 = new SplitText(".landing-h2-1", TextProps);
-  var landingText5 = new SplitText(".landing-h2-2", TextProps);
+  const landing3 = splitChars(".landing-h2-info-1");
+  const landing4 = splitChars(".landing-h2-1");
+  const landing5 = splitChars(".landing-h2-2");
 
-  LoopText(landingText2, landingText3);
-  LoopText(landingText4, landingText5);
+  if (landing3.length && landing5.length) {
+    loopText(landing3, landing5);
+  }
+
+  if (landing4.length && landing5.length) {
+    loopText(landing4, landing5);
+  }
 }
 
-function LoopText(Text1: SplitText, Text2: SplitText) {
-  var tl = gsap.timeline({ repeat: -1, repeatDelay: 1 });
+// ✅ FIXED: prevent duplicate infinite timelines
+const activeTimelines: gsap.core.Timeline[] = [];
+
+function loopText(text1: HTMLElement[], text2: HTMLElement[]) {
+  const tl = gsap.timeline({
+    repeat: -1,
+    repeatDelay: 1,
+  });
+
+  activeTimelines.push(tl);
+
   const delay = 4;
   const delay2 = delay * 2 + 1;
 
   tl.fromTo(
-    Text2.chars,
+    text2,
     { opacity: 0, y: 80 },
     {
       opacity: 1,
-      duration: 1.2,
-      ease: "power3.inOut",
       y: 0,
+      duration: 1.2,
       stagger: 0.1,
-      delay: delay,
+      delay,
+      ease: "power3.inOut",
     },
     0
   )
     .fromTo(
-      Text1.chars,
+      text1,
       { y: 80 },
       {
-        duration: 1.2,
-        ease: "power3.inOut",
         y: 0,
+        duration: 1.2,
         stagger: 0.1,
         delay: delay2,
+        ease: "power3.inOut",
       },
       1
     )
-    .fromTo(
-      Text1.chars,
-      { y: 0 },
+    .to(
+      text1,
       {
         y: -80,
         duration: 1.2,
-        ease: "power3.inOut",
         stagger: 0.1,
-        delay: delay,
+        delay,
+        ease: "power3.inOut",
       },
       0
     )
     .to(
-      Text2.chars,
+      text2,
       {
         y: -80,
         duration: 1.2,
-        ease: "power3.inOut",
         stagger: 0.1,
         delay: delay2,
+        ease: "power3.inOut",
       },
       1
     );
+}
+
+// optional cleanup helper (important for SPA)
+export function killInitialFX() {
+  activeTimelines.forEach((t) => t.kill());
+  activeTimelines.length = 0;
 }

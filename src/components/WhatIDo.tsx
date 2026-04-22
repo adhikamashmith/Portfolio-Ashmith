@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
-import "./styles/WhatIDo.css";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import "./styles/WhatIDo.css";
 
 const WhatIDo = () => {
   const containerRef = useRef<(HTMLDivElement | null)[]>([]);
+
   const setRef = (el: HTMLDivElement | null, index: number) => {
-    containerRef.current[index] = el;
+    if (el) containerRef.current[index] = el;
   };
 
   const skills = [
@@ -60,18 +61,25 @@ const WhatIDo = () => {
   ];
 
   useEffect(() => {
+    const handlers: ((this: HTMLDivElement, ev: MouseEvent) => any)[] = [];
+
     if (ScrollTrigger.isTouch) {
-      containerRef.current.forEach((container) => {
-        if (container) {
-          container.classList.remove("what-noTouch");
-          container.addEventListener("click", () => handleClick(container));
-        }
+      containerRef.current.forEach((container, index) => {
+        if (!container) return;
+
+        container.classList.remove("what-noTouch");
+
+        const handler = () => handleClick(container);
+        handlers[index] = handler;
+
+        container.addEventListener("click", handler);
       });
     }
+
     return () => {
-      containerRef.current.forEach((container) => {
-        if (container) {
-          container.removeEventListener("click", () => handleClick(container));
+      containerRef.current.forEach((container, index) => {
+        if (container && handlers[index]) {
+          container.removeEventListener("click", handlers[index]);
         }
       });
     };
@@ -87,6 +95,7 @@ const WhatIDo = () => {
           </div>
         </h2>
       </div>
+
       <div className="what-box">
         <div className="what-box-in">
           <div className="what-border2">
@@ -111,6 +120,7 @@ const WhatIDo = () => {
               />
             </svg>
           </div>
+
           {skills.map((skill, index) => (
             <div
               key={index}
@@ -141,13 +151,16 @@ const WhatIDo = () => {
                   )}
                 </svg>
               </div>
+
               <div className="what-corner"></div>
 
               <div className="what-content-in">
                 <h3>{skill.title}</h3>
                 <h4>Description</h4>
                 <p>{skill.description}</p>
+
                 <h5>Skillset & tools</h5>
+
                 <div className="what-content-flex">
                   {skill.skillset.map((tool, toolIndex) => (
                     <div key={toolIndex} className="what-tags">
@@ -155,6 +168,7 @@ const WhatIDo = () => {
                     </div>
                   ))}
                 </div>
+
                 <div className="what-arrow"></div>
               </div>
             </div>
@@ -167,14 +181,20 @@ const WhatIDo = () => {
 
 export default WhatIDo;
 
+/* ---------------- HELPERS ---------------- */
+
 function handleClick(container: HTMLDivElement) {
   container.classList.toggle("what-content-active");
   container.classList.remove("what-sibling");
+
   if (container.parentElement) {
     const siblings = Array.from(container.parentElement.children);
 
     siblings.forEach((sibling) => {
-      if (sibling !== container && sibling.classList.contains("what-content")) {
+      if (
+        sibling !== container &&
+        sibling.classList.contains("what-content")
+      ) {
         sibling.classList.remove("what-content-active");
         sibling.classList.toggle("what-sibling");
       }
