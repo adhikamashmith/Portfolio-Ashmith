@@ -18,11 +18,11 @@ const Landing = ({ children }: PropsWithChildren) => {
 
         {/* HERO INFO */}
         <div className="landing-info">
-          <h3>A Creative Developer</h3>
-
-          <h2 className="landing-info-h2">
-            AI Enthusiast • Full Stack Developer • Machine Learning Explorer
-          </h2>
+          <h1>
+            <span className="creative-text">A Creative Developer</span>
+            <br />
+            <span>AI & Machine Learning Practitioner</span>
+          </h1>
         </div>
 
       </div>

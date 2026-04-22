@@ -110,6 +110,9 @@
   bottom: 50px;
   pointer-events: inherit;
 }
+.creative-text {
+  color: #c481ff;
+}
 .character-model::after {
   content: "";
   width: 100vw;
