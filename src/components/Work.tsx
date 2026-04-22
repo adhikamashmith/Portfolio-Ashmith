@@ -3,6 +3,10 @@ import WorkImage from "./WorkImage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import cv from "../assets/cv.jpg";
+import tatva from "../assets/tatavfoow.avif";
+import mockmate from "../assets/mockmate.jpg";
+import clipforge from "../assets/clipforge.webp";
 
 gsap.registerPlugin(useGSAP);
 
@@ -12,28 +16,28 @@ const Work = () => {
       title: "MudraNet",
       category: "Computer Vision",
       tools: "Python, MediaPipe, TensorFlow, OpenCV",
-      image: "src/assets/cv.jpg",
+      image: cv,
       repo: "https://github.com/adhikamashmith/VIDEO-GESTURE-RECOGNITION",
     },
     {
       title: "TatvaFlow",
       category: "Data Analysis Platform",
       tools: "Streamlit, Python, LangChain, LLMs",
-      image: "src/assets/tatavfoow.avif",
+      image: tatva,
       repo: "https://github.com/adhikamashmith/TatvaFlow",
     },
     {
       title: "MockMate",
       category: "AI Interview Simulator",
       tools: "LLMs, Audio Processing, Full-Stack",
-      image: "src/assets/mockmate.jpg",
+      image: mockmate,
       repo: "https://github.com/adhikamashmith/MOCKMATE",
     },
     {
       title: "ClipForge",
       category: "AI Content Repurposing Tool",
       tools: "Node.js, FFmpeg, Whisper AI, Express, Multer",
-      image: "src/assets/clipforge.webp",
+      image: clipforge,
       repo: "https://github.com/adhikamashmith/forge-studio",
     },
   ];
