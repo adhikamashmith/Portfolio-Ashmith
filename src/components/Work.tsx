@@ -8,6 +8,7 @@ import cv from "../assets/cv.jpg";
 import tatva from "../assets/tatavfoow.avif";
 import mockmate from "../assets/mockmate.jpg";
 import clipforge from "../assets/clipforge.webp";
+import smartgrade from "../assets/smartgrade.jpeg";
 
 // ✅ Correct plugin registration
 gsap.registerPlugin(ScrollTrigger);
@@ -41,6 +42,13 @@ const Work = () => {
       tools: "Node.js, FFmpeg, Whisper AI, Express, Multer",
       image: clipforge,
       repo: "https://github.com/adhikamashmith/forge-studio",
+    },
+    {
+      title: "SmartGrade",
+      category: "AI-Powered Exam Evaluation System",
+      tools: "React.js, FastAPI, MongoDB, Google Gemini AI, ChromaDB, Google Vision OCR, Tailwind CSS",
+      image: smartgrade,
+      repo: "https://github.com/adhikamashmith/smartgrade-AI/tree/main/smartgrade",
     },
   ];
 
